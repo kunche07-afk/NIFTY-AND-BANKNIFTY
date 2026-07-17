@@ -159,7 +159,7 @@ def flag_row(drop_pct: float) -> str:
     return ""
 
 
-styled = df.style.applymap(flag_row, subset=["Drop %"])
+styler = df.style apply_fn = styler.map if hasattr(styler, "map") else styler.applymap styled = apply_fn(flag_row, subset=["Drop %"])
 st.dataframe(styled, use_container_width=True, height=650)
 
 st.caption(
