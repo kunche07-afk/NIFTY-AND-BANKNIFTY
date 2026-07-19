@@ -21,6 +21,7 @@ UPSTOX_ACCESS_TOKEN = os.getenv("UPSTOX_ACCESS_TOKEN", "")
 UNDERLYINGS = {
     "NIFTY 50": "NSE_INDEX|Nifty 50",
     "NIFTY BANK": "NSE_INDEX|Nifty Bank",
+    "BSE SENSEX": "BSE_INDEX|SENSEX",
 }
 
 # ---- Drop thresholds (percent off the day's high premium) -------------
