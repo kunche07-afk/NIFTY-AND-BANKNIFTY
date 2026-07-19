@@ -125,17 +125,20 @@ if pending:
 
 # update with live LTPs, organize by strike into CE (left) / PE (right)
 by_strike = {}
-flag_counts = {"severe": 0, "moderate": 0, "mild": 0}
+flag_counts = {"severe": 0, "moderate": 0, "mild": 0, "none": 0, "total": 0}
 
 for r in rows:
     stats = tracker.update(r["instrument_key"], r["ltp"])
     d = stats["drop_pct"]
+    flag_counts["total"] += 1
     if d >= config.THRESHOLDS["severe"]:
         flag_counts["severe"] += 1
-    if d >= config.THRESHOLDS["moderate"]:
+    elif d >= config.THRESHOLDS["moderate"]:
         flag_counts["moderate"] += 1
-    if d >= config.THRESHOLDS["mild"]:
+    elif d >= config.THRESHOLDS["mild"]:
         flag_counts["mild"] += 1
+    else:
+        flag_counts["none"] += 1
 
     side = by_strike.setdefault(r["strike"], {})
     side[r["type"]] = {"ltp": stats["ltp"], "ath": stats["ath"], "drop_pct": d}
@@ -191,11 +194,12 @@ col_order = [
 df = pd.DataFrame(table_rows)[col_order]
 
 # --------------------------------------------------------------- summary --
-c1, c2, c3, c4 = st.columns(4)
+c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric(f"{underlying_name} Spot", f"{spot:,.2f}")
-c2.metric("Severe drops (\u22657%)", flag_counts["severe"])
-c3.metric("Moderate drops (\u22655%)", flag_counts["moderate"])
-c4.metric("Mild drops (\u22653%)", flag_counts["mild"])
+c2.metric("Severe (\u22657%)", flag_counts["severe"])
+c3.metric("Moderate (5\u20137%)", flag_counts["moderate"])
+c4.metric("Mild (3\u20135%)", flag_counts["mild"])
+c5.metric("No drop yet (<3%)", flag_counts["none"])
 
 flag_colors = {"\u22657%": "#ff6b6b", "\u22655%": "#ffa94d", "\u22653%": "#ffe066"}
 flag_columns = [c for c in df.columns if "\u2265" in c]
